@@ -61,21 +61,9 @@ export async function createE2EClusterInfrastructure(): Promise<void> {
 export async function createE2ETrustBundleAndOperatorCert(
   namespace: string,
 ): Promise<void> {
-  let operatorNs: string;
-
-  if (process.env.OPERATOR_NAMESPACE) {
-    operatorNs = process.env.OPERATOR_NAMESPACE;
-    console.log(`✓ Using OPERATOR_NAMESPACE from environment: ${operatorNs}`);
-  } else {
-    operatorNs = await detectOperatorNamespace('default');
-    if (operatorNs === 'default') {
-      console.log(
-        `⚠️  Could not detect operator namespace, falling back to "default"`,
-      );
-    } else {
-      console.log(`✓ Detected operator namespace via pod label: ${operatorNs}`);
-    }
-  }
+  // Use OPERATOR_POD_LABEL to detect operator namespace
+  // Falls back to 'default' if detection fails
+  const operatorNs = await detectOperatorNamespace('default');
   console.log(`Using operator namespace: ${operatorNs}`);
 
   await createTrustBundleAndOperatorCert(
